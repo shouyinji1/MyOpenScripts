@@ -133,6 +133,15 @@ setDevice(){
 	elif [ $1 -eq 4 ];then
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
+		basePoint_y=$(((size_y-newSize_y)/2 + baseAxisOfMonitor_y))
+
+		xsetwacom set "$device" Rotate none \
+		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${baseAxisOfMonitor_x}+${basePoint_y} \
+		&& xsetwacom set "$device" Area 0 0 ${defaultArea[2]} ${defaultArea[3]} \
+		&& notify-send "Ctrl+Alt+6: 数位板不旋转, 居左1/2宽度, Area全区域"
+	elif [ $1 -eq 5 ];then
+		newSize_x=$((size_x/2))
+		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
 		basePoint_x=$((newSize_x/2 + baseAxisOfMonitor_x))
 		basePoint_y=$(((size_y-newSize_y)/2 + baseAxisOfMonitor_y))
 		
@@ -140,7 +149,7 @@ setDevice(){
 		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${basePoint_x}+${basePoint_y} \
 		&& xsetwacom set "$device" Area 0 0 ${defaultArea[2]} ${defaultArea[3]} \
 		&& notify-send "Ctrl+Alt+4: 数位板不旋转, 居中1/2宽度, Area全区域"
-	elif [ $1 -eq 5 ];then
+	elif [ $1 -eq 6 ];then
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
 		basePoint_x=$((newSize_x + baseAxisOfMonitor_x))
@@ -150,15 +159,6 @@ setDevice(){
 		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${basePoint_x}+${basePoint_y} \
 		&& xsetwacom set "$device" Area 0 0 ${defaultArea[2]} ${defaultArea[3]} \
 		&& notify-send "Ctrl+Alt+5: 数位板不旋转, 居右1/2宽度, Area全区域"
-	elif [ $1 -eq 6 ];then
-		newSize_x=$((size_x/2))
-		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
-		basePoint_y=$(((size_y-newSize_y)/2 + baseAxisOfMonitor_y))
-
-		xsetwacom set "$device" Rotate none \
-		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${baseAxisOfMonitor_x}+${basePoint_y} \
-		&& xsetwacom set "$device" Area 0 0 ${defaultArea[2]} ${defaultArea[3]} \
-		&& notify-send "Ctrl+Alt+6: 数位板不旋转, 居左1/2宽度, Area全区域"
 	elif [ $1 -eq 7 ];then
 		newSize_x=$((size_x/2 + size_x * 2 / 100))	# 1/2宽度放大2%
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
