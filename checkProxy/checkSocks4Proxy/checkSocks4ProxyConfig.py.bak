@@ -1,0 +1,10 @@
+#!/usr/bin/python3
+
+from checkSocks4Proxy import PrivateInfo
+
+PrivateInfo.fromEmail=''
+PrivateInfo.fromEmailPasswd=''
+PrivateInfo.toEmail=''
+PrivateInfo.subjectForCheck=''
+PrivateInfo.subjectForException=''
+PrivateInfo.expireTime=3

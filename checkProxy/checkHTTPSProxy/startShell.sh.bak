@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+cd /root/MyScripts/Python/checkHTTPSProxy/
+python3 ./checkHTTPSProxy.py -c /etc/nginx/nginx.conf
+
+
+
+# # cron config:
+# 18 */3  * * *   root    /root/Desktop/MyScripts/Python/checkHTTPSProxy/startShell.sh
+#18 */12        * * *   root    /root/Desktop/MyScripts/Python/checkSocks4Proxy/startShell.sh && /root/Desktop/MyScripts/Python/checkHTTPSProxy/startShell.sh
+
+
