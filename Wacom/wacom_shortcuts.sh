@@ -104,7 +104,18 @@ setDevice(){
 		&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
 		&& notify-send "Ctrl+Shift+1: HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
 		&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
-	elif [ $1 -eq 2 ];then 	# 右半屏映射
+	elif [ $1 -eq 2 ];then 	# 左半屏映射
+		# 计算映射区域
+		size_x=$((size_x / 2))
+		deviceArea=($(getDeviceArea $size_y $size_x))
+		area_x=${deviceArea[0]}
+		area_y=${deviceArea[1]}
+
+		xsetwacom set "$device" Rotate ccw && \
+		xsetwacom set "$device" MapToOutput ${size_x}x${size_y}+${baseAxisOfMonitor_x}+${baseAxisOfMonitor_y} && \
+		xsetwacom set "$device" Area 0 0 $area_x $area_y && \
+		notify-send "Ctrl+Alt+3: 数位板顺时针旋转, 左半屏映射"
+	elif [ $1 -eq 3 ];then 	# 右半屏映射
 		# 计算显示器映射区域
 		size_x=$((size_x / 2))
 		basePoint_x=$((size_x+baseAxisOfMonitor_x))
@@ -119,17 +130,6 @@ setDevice(){
 		xsetwacom set "$device" MapToOutput ${size_x}x${size_y}+${basePoint_x}+${baseAxisOfMonitor_y} && \
 		xsetwacom set "$device" Area 0 0 $area_x $area_y && \
 		notify-send "Ctrl+Alt+2: 数位板顺时针旋转, 右半屏映射"
-	elif [ $1 -eq 3 ];then 	# 左半屏映射
-		# 计算映射区域
-		size_x=$((size_x / 2))
-		deviceArea=($(getDeviceArea $size_y $size_x))
-		area_x=${deviceArea[0]}
-		area_y=${deviceArea[1]}
-
-		xsetwacom set "$device" Rotate ccw && \
-		xsetwacom set "$device" MapToOutput ${size_x}x${size_y}+${baseAxisOfMonitor_x}+${baseAxisOfMonitor_y} && \
-		xsetwacom set "$device" Area 0 0 $area_x $area_y && \
-		notify-send "Ctrl+Alt+3: 数位板顺时针旋转, 左半屏映射"
 	elif [ $1 -eq 4 ];then
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
