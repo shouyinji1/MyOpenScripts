@@ -10,12 +10,13 @@ defaultArea=(0 0 15200 9500)
 # 获取显示器分辨率和基轴坐标
 # 输入：显示器编号0,1,...
 # 输出: 显示器size_x size_y baseAxisOfMonitor_x baseAxisOfMonitor_y
+# 执行结束状态：始终为0
 getMonitorInfo(){
 	local monitorsInfo=$(xrandr --listmonitors)
 	echo "$monitorsInfo" | while read line;do
 		monitor=($line)
 		local monitorID=${monitor%:*}
-		#notify-send ${monitor%:*}
+		#notify-send "monitor:${monitor%:*}"
 		if [ $monitorID -eq $1 ];then
 			# 显示器分辨率
 			size_x=${monitor[2]%%/*}
@@ -30,10 +31,9 @@ getMonitorInfo(){
 			# 返回显示器参数值
 			temp=($size_x $size_y $baseAxisOfMonitor_x $baseAxisOfMonitor_y)
 			echo ${temp[@]}
-			return 0	# 读取显示器参数成功
+			return 0	# 退出while子进程
 		fi
 	done
-	return 1	# 读取显示器参数失败
 }
 
 # 获取数位板感应区域的适宜大小
@@ -78,33 +78,37 @@ setDevice(){
 	if [ "$1" == "-m0" ];then 	# 显示器0, 全屏映射
 		monitorID=0
 		monitorInfo=($(getMonitorInfo $monitorID))	# 获取显示器的分辨率
-		size_x=${monitorInfo[0]}
-		size_y=${monitorInfo[1]}
-		deviceArea=($(getDeviceArea $size_x $size_y))	# 根据显示器大小计算数位板感应区域
-		area_x=${deviceArea[0]}
-		area_y=${deviceArea[1]}
-		#notify-send $size_x $size_y
-		#notify-send $area_x $area_y
+		if [ "$monitorInfo" != "" ];then	# 不为空串，获取显示器分辨率成功
+			size_x=${monitorInfo[0]}
+			size_y=${monitorInfo[1]}
+			deviceArea=($(getDeviceArea $size_x $size_y))	# 根据显示器大小计算数位板感应区域
+			area_x=${deviceArea[0]}
+			area_y=${deviceArea[1]}
+			#notify-send $size_x $size_y
+			#notify-send $area_x $area_y
 
-		xsetwacom set "$device" MapToOutput HEAD-${monitorID} \
-		&& xsetwacom set "$device" Rotate none \
-		&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
-		&& notify-send "HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
-		&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
+			xsetwacom set "$device" MapToOutput HEAD-${monitorID} \
+			&& xsetwacom set "$device" Rotate none \
+			&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
+			&& notify-send "HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
+			&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
+		fi
 	elif [ "$1" == "-m1" ];then 	# 显示器1, 全屏映射
 		monitorID=1
 		monitorInfo=($(getMonitorInfo $monitorID))	# 获取显示器的分辨率
-		size_x=${monitorInfo[0]}
-		size_y=${monitorInfo[1]}
-		deviceArea=($(getDeviceArea $size_x $size_y))	# 根据显示器大小计算数位板感应区域
-		area_x=${deviceArea[0]}
-		area_y=${deviceArea[1]}
+		if [ "$monitorInfo" != "" ];then	# 不为空串，获取显示器分辨率成功
+			size_x=${monitorInfo[0]}
+			size_y=${monitorInfo[1]}
+			deviceArea=($(getDeviceArea $size_x $size_y))	# 根据显示器大小计算数位板感应区域
+			area_x=${deviceArea[0]}
+			area_y=${deviceArea[1]}
 
-		xsetwacom set "$device" MapToOutput HEAD-${monitorID} \
-		&& xsetwacom set "$device" Rotate none \
-		&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
-		&& notify-send "HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
-		&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
+			xsetwacom set "$device" MapToOutput HEAD-${monitorID} \
+			&& xsetwacom set "$device" Rotate none \
+			&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
+			&& notify-send "HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
+			&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
+		fi
 	elif [ "$1" == "-a" ];then 	# 自由选定映射区域，1/2屏幕宽度，指针位于映射中心的左上方
 		eval $(xdotool getmouselocation --shell)	# 获取鼠标指针的X、Y、SCREEN、WINDOW变量值。需要安装xdotool工具
 		newSize_x=$((size_x/2))
