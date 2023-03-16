@@ -105,17 +105,17 @@ setDevice(){
 		&& xsetwacom set "$device" Area 0 0 $area_x $area_y \
 		&& notify-send "HEAD-${monitorID}屏幕，数位板不旋转, 全屏映射" \
 		&& echo $monitorID > $(dirname $(readlink -f "$0"))/Wacom-HEAD.tmp 	# 写入显示器选择文件
-	elif [ "$1" == "-a" ];then 	# 自由选定映射区域，以鼠标数位板指针为中心的1/2屏幕区域
+	elif [ "$1" == "-a" ];then 	# 自由选定映射区域，1/2屏幕宽度，指针位于映射中心的左上方
 		eval $(xdotool getmouselocation --shell)	# 获取鼠标指针的X、Y、SCREEN、WINDOW变量值。需要安装xdotool工具
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
-		basePoint_x=$((baseAxisOfMonitor_x + X - newSize_x/2))
-		basePoint_y=$((baseAxisOfMonitor_y + Y - newSize_y/2))
+		basePoint_x=$((baseAxisOfMonitor_x + X - newSize_x/4))	# 鼠标指针位于映射中心的左上方
+		basePoint_y=$((baseAxisOfMonitor_y + Y - newSize_y/4))
 
 		xsetwacom set "$device" Rotate none \
 		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${basePoint_x}+${basePoint_y} \
 		&& xsetwacom set "$device" Area 0 0 ${defaultArea[2]} ${defaultArea[3]} \
-		&& notify-send "数位板不旋转, 映射区域以鼠标指针为中心的1/2宽度, Area全区域"
+		&& notify-send "数位板不旋转, 1/2屏幕映射宽度，指针位于左上方, Area全区域"
 	elif [ $1 -eq 4 ];then
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
