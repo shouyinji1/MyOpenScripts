@@ -113,8 +113,8 @@ setDevice(){
 		eval $(xdotool getmouselocation --shell)	# 获取鼠标指针的X、Y、SCREEN、WINDOW变量值。需要安装xdotool工具
 		newSize_x=$((size_x/2))
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))
-		basePoint_x=$((baseAxisOfMonitor_x + X - newSize_x/4))	# 鼠标指针位于映射中心的左上方
-		basePoint_y=$((baseAxisOfMonitor_y + Y - newSize_y/4))
+		basePoint_x=$((X - newSize_x/4))	# 鼠标指针位于映射中心的左上方
+		basePoint_y=$((Y - newSize_y/4))
 
 		xsetwacom set "$device" Rotate none \
 		&& xsetwacom set "$device" MapToOutput ${newSize_x}x${newSize_y}+${basePoint_x}+${basePoint_y} \
