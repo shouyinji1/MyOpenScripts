@@ -139,3 +139,8 @@ if __name__ == "__main__":
             subject="myStock.py异常",
             content=traceback.format_exc()
         )
+
+
+# 部署（开机后1-60分钟内随机一个时间启动脚本）：
+# crontab -e
+# @reboot sleep $[ ( $RANDOM % 3600 )  + 1 ] && /home/abc/myStock.py
