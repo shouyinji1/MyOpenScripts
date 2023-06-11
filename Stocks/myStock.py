@@ -39,17 +39,8 @@ def stock_hold_handle(ratio):
     if(ratio>1.5):  # 如果股价上涨超50%
         if(random.random()<0.5):    # 50%的概率，可卖出
             return True
-    elif(ratio>1.4):    # 如果股价上涨超40%
-        if(random.random()<0.4):    # 40%的概率，可卖出
-            return True
-    elif(ratio>1.3):    # 如果股价上涨超30%
-        if(random.random()<0.3):    # 30%的概率，可卖出
-            return True
-    elif(ratio>1.2):    # 如果股价上涨超20%
-        if(random.random()<0.2):    # 20%的概率，可卖出
-            return True
     elif(ratio>1.1):    # 如果股价上涨超10%
-        if(random.random()<0.1):    # 10%的概率，可卖出
+        if(random.random() < ratio-1.0):
             return True
     else:
         return False
@@ -120,7 +111,7 @@ def sendEmail(from_email, from_email_password, to_email, content, subject='test'
 
 if __name__ == "__main__": 
     try:
-        if(random.random()*30 < 1.0):   # 1/30概率，相当于一个月检查一次左右
+        if(random.random() < 0.5):   # 1/2概率。降低检查频率
         #if(True):
             result_string,result_status=check_stock(myStockConfig.stocks_hold, myStockConfig.stocks_wait)
             if(result_status):
@@ -132,6 +123,8 @@ if __name__ == "__main__":
                     content=result_string
                 )
     except Exception as e:
+    #    pass
+    #if(True):
         sendEmail(
             from_email=myStockConfig.email_config["from_email"],
             from_email_password=myStockConfig.email_config["from_email_password"],
