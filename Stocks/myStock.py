@@ -39,7 +39,7 @@ def stock_hold_handle(ratio):
     if(ratio>1.5):  # 如果股价上涨超50%
         if(random.random()<0.5):    # 50%的概率，可卖出
             return True
-    elif(ratio>1.1):    # 如果股价上涨超10%
+    elif(ratio>1.05):    # 如果股价上涨超5%
         if(random.random() < ratio-1.0):
             return True
     else:
@@ -137,3 +137,4 @@ if __name__ == "__main__":
 # 部署（开机后1-60分钟内随机一个时间启动脚本）：
 # crontab -e
 # @reboot sleep $[ ( $RANDOM % 3600 )  + 1 ] && /home/abc/myStock.py
+# * */24 * * *  /home/abc/myStock.py
