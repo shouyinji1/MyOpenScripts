@@ -112,7 +112,7 @@ setDevice(){
 	elif [ "$1" == "-a" ];then 	# 自由选定映射区域，1/2屏幕宽度，指针位于映射中心的左上方
 		eval $(xdotool getmouselocation --shell)	# 获取鼠标指针的X、Y、SCREEN、WINDOW变量值。需要安装xdotool工具
 		#newSize_x=$((size_x/2 * 100/110))	# 缩放至90%大小，适用15.6寸屏
-		newSize_x=$((size_x/2)	# 1/2屏幕宽度
+		newSize_x=$((size_x/2))	# 1/2屏幕宽度
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))	# 保持长宽比
 		basePoint_x=$((X - newSize_x/3))	# 鼠标指针位于映射中心的左上方
 		basePoint_y=$((Y - newSize_y/4))
