@@ -14,9 +14,9 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
     ){ # 1/2概率不限速
         Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20GB
     }else{  # 限速
-        Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20KB
+        Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 15KB
         if($? -eq $false){
-            New-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20KB
+            New-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 15KB
 
             ## 不限速白名单
             New-NetQosPolicy -Name "MyTrafficLimit_org" -URIMatchCondition "https://*.org" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # .org类网站
