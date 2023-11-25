@@ -4,12 +4,12 @@
 # 自由选择映射区域功能需要安装xdotool
 
 # Wacom CTL 472
-#device="Wacom One by Wacom S Pen stylus"
-#defaultArea=(0 0 15200 9500)
+device="Wacom One by Wacom S Pen stylus"
+defaultArea=(0 0 15200 9500)
 
 # Wacom CTL 672
-device="Wacom One by Wacom M Pen stylus"
-defaultArea=(0 0 21600 13500)
+#device="Wacom One by Wacom M Pen stylus"
+#defaultArea=(0 0 21600 13500)
 
 
 # 获取显示器分辨率和基轴坐标
