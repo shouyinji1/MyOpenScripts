@@ -1,6 +1,6 @@
 #Requires -RunAsAdministrator
 
-### Windows网速控制工具
+### 网速控制工具
 # Windows Home版本缺乏某些必要的功能，此脚本虽然可执行不报错，但不能在该版本上正常生效。
 # 即使Windows Home版本使用网传脚本启用本地组策略编辑功能，该脚本也不能正常生效。
 
@@ -38,11 +38,11 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
 
             New-NetQosPolicy -Name "MyTrafficLimit_dasai.lanqiao.cn" -URIMatchCondition "https://dasai.lanqiao.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 蓝桥杯大赛
             New-NetQosPolicy -Name "MyTrafficLimit_fanyi.youdao.com" -URIMatchCondition "https://fanyi.youdao.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 有道翻译
-            New-NetQosPolicy -Name "MyTrafficLimit_learn.microsoft" -URIMatchCondition "https://learn.microsoft.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # Microsoft Learn
+            New-NetQosPolicy -Name "MyTrafficLimit_learn.microsoft.com" -URIMatchCondition "https://learn.microsoft.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # Microsoft Learn
+            New-NetQosPolicy -Name "MyTrafficLimit_wenku.baidu.com" -URIMatchCondition "https://wenku.baidu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 百度文库
         }
     }
-} -Trigger (
-    # 每一分钟执行一次
+} -Trigger (    # 每一分钟执行一次
     New-JobTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval '00:01:00' -RepeatIndefinitely
 )
 
