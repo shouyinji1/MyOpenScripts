@@ -6,9 +6,9 @@
 
 # 限速：
 Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
-    # 不限速时间段：20:00-22:00, 06:00-09:00, 12:00-13:00
+    # 不限速时间段：21:00-22:00, 06:00-09:00, 12:00-13:00
     if( ((get-random -inputobject (0..1)) -eq 0) `
-        -or ( ((Get-Date -Format "HH:mm").CompareTo("20:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("22:00") -eq -1) ) `
+        -or ( ((Get-Date -Format "HH:mm").CompareTo("21:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("22:00") -eq -1) ) `
         -or ( ((Get-Date -Format "HH:mm").CompareTo("06:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("09:00") -eq -1) ) `
         -or ( ((Get-Date -Format "HH:mm").CompareTo("12:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("13:00") -eq -1) ) `
     ){ # 1/2概率不限速
