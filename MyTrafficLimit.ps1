@@ -13,6 +13,7 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
         -or ( ((Get-Date -Format "HH:mm").CompareTo("12:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("13:00") -eq -1) ) `
     ){ # 1/2概率不限速
         Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20GB
+        Set-NetQosPolicy -Name "MyTrafficLimit_IPSrc_10.14.134.167_20" -IPSrcPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 20GB  # NoMachine
     }else{  # 限速
         Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20KB
         if($? -eq $false){
@@ -40,6 +41,18 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
             New-NetQosPolicy -Name "MyTrafficLimit_fanyi.youdao.com" -URIMatchCondition "https://fanyi.youdao.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 有道翻译
             New-NetQosPolicy -Name "MyTrafficLimit_learn.microsoft.com" -URIMatchCondition "https://learn.microsoft.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # Microsoft Learn
             New-NetQosPolicy -Name "MyTrafficLimit_wenku.baidu.com" -URIMatchCondition "https://wenku.baidu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 百度文库
+            
+            # NoMachine
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxservice64.exe" -AppPathNameMatchCondition "nxservice64.exe" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxnode.bin" -AppPathNameMatchCondition "nxnode.bin" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxnode.exe" -AppPathNameMatchCondition "nxnode.exe" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxd.exe" -AppPathNameMatchCondition "nxd.exe" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxserver.bin" -AppPathNameMatchCondition "nxserver.bin" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxserver.exe" -AppPathNameMatchCondition "nxserver.exe" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxrunner.bin" -AppPathNameMatchCondition "nxrunner.bin" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxrunner.exe" -AppPathNameMatchCondition "nxrunner.exe" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_IPDst_10.14.134.167_20" -IPDstPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 5GB
+            New-NetQosPolicy -Name "MyTrafficLimit_IPSrc_10.14.134.167_20" -IPSrcPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 200KB
         }
     }
 } -Trigger (    # 每一分钟执行一次
@@ -47,7 +60,7 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
 )
 
 # 查看限速状态
-#Get-NetQosPolicy -Name "MyTrafficLimit"
+#Get-NetQosPolicy -Name "MyTrafficLimit*"
 
 # 移除限速任务：
 #Unregister-ScheduledJob "MyTrafficLimit"
