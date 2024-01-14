@@ -18,3 +18,7 @@ if __name__=='__main__':
         if test_i2p() == False:
             if test_i2p() == False:
                 os.system("systemctl restart i2p")
+
+
+# crontab:
+# */35 *  * * *   root    python3 /root/MyOpenScripts/Python/test_i2p/test_i2p.py
