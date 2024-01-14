@@ -8,7 +8,7 @@ def test_i2p():
     }
     try:
         requests.get('http://www.baidu.com', proxies=proxies)
-    except ConnectionError:
+    except requests.exceptions.ConnectionError:
         return False
     return True
 
