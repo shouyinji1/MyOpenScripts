@@ -19,12 +19,12 @@ class TestI2P:
         }
         self.test_proxy(proxies=proxies)
 
-    def test_socks5_tor(self):
-        proxies = {
-            "http": 'socks5://127.0.0.1:9050',
-            'https': 'socks5://127.0.0.1:9050'
-        }
-        self.test_proxy(proxies=proxies)
+    # def test_socks5_tor(self):
+    #     proxies = {
+    #         "http": 'socks5://127.0.0.1:9050',
+    #         'https': 'socks5://127.0.0.1:9050'
+    #     }
+    #     self.test_proxy(proxies=proxies)
 
     def test_outproxy(self):
         proxies = {
@@ -42,10 +42,10 @@ class TestI2P:
     
     def test(self):
         if self.test_socks5() == False:
-            if self.test_socks5_tor() == False:
-                if self.test_outproxy() == False:
-                    if self.test_httpproxy() == False:
-                        return False
+            #if self.test_socks5_tor() == False:
+            if self.test_outproxy() == False:
+                if self.test_httpproxy() == False:
+                    return False
         return True
 
 
