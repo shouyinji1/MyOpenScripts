@@ -17,28 +17,28 @@ class TestI2P:
             "http": 'socks5://127.0.0.1:4452',
             'https': 'socks5://127.0.0.1:4452'
         }
-        self.test_proxy(proxies=proxies)
+        return self.test_proxy(proxies=proxies)
 
     # def test_socks5_tor(self):
     #     proxies = {
     #         "http": 'socks5://127.0.0.1:9050',
     #         'https': 'socks5://127.0.0.1:9050'
     #     }
-    #     self.test_proxy(proxies=proxies)
+    #     return self.test_proxy(proxies=proxies)
 
     def test_outproxy(self):
         proxies = {
             "http": 'http://127.0.0.1:4444',
             'https': 'http://127.0.0.1:4444'
         }
-        self.test_proxy(proxies=proxies)
+        return self.test_proxy(proxies=proxies)
 
     def test_httpproxy(self):
         proxies = {
             "http": 'http://127.0.0.1:4451',
             'https': 'http://127.0.0.1:4451'
         }
-        self.test_proxy(proxies=proxies)
+        return self.test_proxy(proxies=proxies)
     
     def test(self):
         if self.test_socks5() == False:
