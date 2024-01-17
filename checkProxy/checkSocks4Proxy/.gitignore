@@ -4,3 +4,5 @@ startShell.sh
 *.html
 *.db
 *.swp
+*.ini
+__pycache__/

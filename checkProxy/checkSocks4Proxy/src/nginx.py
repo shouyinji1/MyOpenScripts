@@ -34,7 +34,7 @@ class Nginx:
         line=''
         proxies=ProxySocks4().get_available_foreign_proxy(30) # 获取大于等于30条代理
         if proxies != []:
-            if proxies < 30: self.sendEmail('代理不足')
+            if len(proxies) < 30: self.sendEmail('代理不足')
             for proxy in proxies:
                 line+='\t\tserver '+proxy['ip']+':'+proxy['port']+';\n'
         else:
