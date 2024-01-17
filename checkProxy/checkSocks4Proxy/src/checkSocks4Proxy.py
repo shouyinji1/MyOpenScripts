@@ -18,7 +18,7 @@ try:
 except ModuleNotFoundError:
     print('Config file not found！')
 
-from proxyDBManage import ProxyDB
+from proxy_db import ProxyDB
 
 
 # 检查代理是否过期
