@@ -22,21 +22,21 @@ class Nginx:
                 elif len(subline)>=14 and serverPosition==True and subline[0:7] =='server ' and '#' not in subline:    # 是没有注释的代理
                     line='' # 清空代理所在的行
                 newText+=line
-        # 写入文件
-        f.seek(0)
-        f.truncate()
-        f.write(newText)
-        f.flush()
-
+            # 写入文件
+            f.seek(0)
+            f.truncate()
+            f.write(newText)
+            f.flush()
         os.system("systemctl restart nginx")
 
     def seed_to_line(self):
         line=''
-        proxies=ProxySocks4().get_available_foreign_proxy(30) # 获取大于等于30条代理
-        if proxies != []:
-            if len(proxies) < 30: self.sendEmail('代理不足')
+        quantity = 30    # 获取的代理条数大于等于30
+        proxies=ProxySocks4().get_available_foreign_proxy(quantity)
+        if proxies != None and proxies !=[]:
+            if len(proxies) < quantity: self.sendEmail('代理不足')
             for proxy in proxies:
-                line+='\t\tserver '+proxy['ip']+':'+proxy['port']+';\n'
+                line+='\t\tserver '+proxy['ip']+':'+str(proxy['port'])+';\n'
         else:
             self.sendEmail('没有代理了')
         return line

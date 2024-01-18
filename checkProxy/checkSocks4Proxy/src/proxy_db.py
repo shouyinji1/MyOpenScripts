@@ -70,13 +70,13 @@ class ProxySocks4:
         )
         self.__conn.commit()    # 提交事务
 
-    def get_available_foreign_proxy(self, quantity=30):  # 从数据库中提取可用的国外socks4代理
+    def get_available_foreign_proxy(self, quantity=30):  # 从数据库中提取可用的国外socks4代理，不少于quantity个
         available_proxies=[]
         waiting_update_proxy=[]
-        offset = 0  # 数据库select偏移页数
+        offset = 0  # 数据库select偏移量
         while len(available_proxies) < quantity:
-            proxy_db=self.__cursor.execute('''select * from proxy_socks4 where country !='China' or country is null order by 最近测试连续失败次数 asc limit 100*?,100'''
-                                            ,(offset,)).fetchall()
+            proxy_db=self.__cursor.execute('''select * from proxy_socks4 where country !='China' or country is null order by 最近测试连续失败次数 asc limit ?,?'''
+                                            ,(offset, quantity)).fetchall()
             if len(proxy_db) < 1: break   # 已经没有代理了
             for proxy in proxy_db:
                 if self.is_foreign_proxy(proxy['ip'], proxy['port']):
@@ -87,9 +87,11 @@ class ProxySocks4:
                     proxy['最近测试连续失败次数']=proxy['最近测试连续失败次数']+1
                 print(proxy)
             waiting_update_proxy = waiting_update_proxy + proxy_db
-            offset==offset+1
+            offset=offset+quantity
         if len(waiting_update_proxy) != 0:
-            self.update(proxy)
+            for proxy in waiting_update_proxy:
+                self.update(proxy)
+        return available_proxies
     
     def isConnected(self):  # 测试是否有网
         try:
