@@ -49,7 +49,7 @@ class ProxySocks4:
             'https': 'socks4://'+ip+':'+str(port)
         }
         try:
-            response=requests.get('https://www.bing.com', proxies=proxies)
+            response=requests.get('https://www.bing.com', proxies=proxies, timeout=30)
         except requests.exceptions.ConnectionError:
             if self.isConnected():
                 return False
