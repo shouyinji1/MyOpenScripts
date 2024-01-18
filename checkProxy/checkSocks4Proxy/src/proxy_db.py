@@ -84,7 +84,10 @@ class ProxySocks4:
                     proxy['最近测试连续失败次数']=0
                     available_proxies.append(proxy)
                 else:
-                    proxy['最近测试连续失败次数']=proxy['最近测试连续失败次数']+1
+                    if proxy['最近测试连续失败次数'] != None:
+                        proxy['最近测试连续失败次数']=proxy['最近测试连续失败次数']+1
+                    else:
+                        proxy['最近测试连续失败次数']=1
                 print(proxy)
             waiting_update_proxy = waiting_update_proxy + proxy_db
             offset=offset+quantity
