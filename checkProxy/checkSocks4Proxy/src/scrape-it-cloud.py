@@ -27,6 +27,9 @@ class ScrapeItCloud:
         proxies=self.get_proxies()
         for proxy in proxies:
             if self.test_proxy(proxy):
+                proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                proxy['最近测试连续失败次数']=0
+                if proxy['country']=='Unknown': proxy['country']=None
                 available_proxies.append(proxy)
             print(proxy)
         return available_proxies
@@ -44,8 +47,6 @@ class ScrapeItCloud:
             else:
                 raise Exception("没网")
         if ' Bing ' in response.text:
-            proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            proxy['最近测试连续失败次数']=0
             return True
         return False
 
@@ -62,8 +63,6 @@ class ScrapeItCloud:
             else:
                 raise Exception("没网")
         if ' FindProxyForURL' in response.text:
-            proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            proxy['最近测试连续失败次数']=0
             return True
         return False
 
