@@ -31,7 +31,7 @@ class Nginx:
 
     def seed_to_line(self):
         line=''
-        quantity = 30    # 获取的代理条数大于等于30
+        quantity = 10    # 获取的代理条数大于等于10
         proxies=ProxySocks4().get_available_foreign_proxy(quantity)
         if proxies != None and proxies !=[]:
             if len(proxies) < quantity: self.sendEmail('代理不足')

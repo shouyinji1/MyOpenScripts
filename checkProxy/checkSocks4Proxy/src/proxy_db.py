@@ -50,7 +50,7 @@ class ProxySocks4:
         }
         try:
             response=requests.get('https://www.bing.com', proxies=proxies, timeout=30)
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
             if self.isConnected():
                 return False
             else:

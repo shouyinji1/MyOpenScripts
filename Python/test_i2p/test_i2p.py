@@ -5,10 +5,10 @@ import os
 class TestI2P:
     def test_proxy(self,proxies):
         try:
-            response=requests.get('http://www.baidu.com', proxies=proxies)
+            response=requests.get('http://www.bing.com', proxies=proxies)
         except requests.exceptions.ConnectionError:
             return False
-        if '百度' in response.text:
+        if ' Bing ' in response.text:
             return True
         return False
 
@@ -19,13 +19,6 @@ class TestI2P:
         }
         return self.test_proxy(proxies=proxies)
 
-    # def test_socks5_tor(self):
-    #     proxies = {
-    #         "http": 'socks5://127.0.0.1:9050',
-    #         'https': 'socks5://127.0.0.1:9050'
-    #     }
-    #     return self.test_proxy(proxies=proxies)
-
     def test_outproxy(self):
         proxies = {
             "http": 'http://127.0.0.1:4444',
@@ -33,18 +26,9 @@ class TestI2P:
         }
         return self.test_proxy(proxies=proxies)
 
-    def test_httpproxy(self):
-        proxies = {
-            "http": 'http://127.0.0.1:4451',
-            'https': 'http://127.0.0.1:4451'
-        }
-        return self.test_proxy(proxies=proxies)
-    
     def test(self):
         if self.test_socks5() == False:
-            #if self.test_socks5_tor() == False:
             if self.test_outproxy() == False:
-                if self.test_httpproxy() == False:
                     return False
         return True
 

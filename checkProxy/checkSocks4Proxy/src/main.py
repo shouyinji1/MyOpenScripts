@@ -10,7 +10,10 @@ from nginx import Nginx
 if __name__=='__main__':
     #email_config_path=os.path.join(os.path.split(os.path.realpath(__file__))[0], '../config/email_config.ini')
     try:
-        Nginx('/etc/nginx/nginx.conf').check_socks4()
+        while(True):
+            Nginx('/etc/nginx/nginx.conf').check_socks4()
+            time.sleep(3600)    # 间隔1小时
+
     except Exception as e:
         error=traceback.format_exc()
         print(error)
