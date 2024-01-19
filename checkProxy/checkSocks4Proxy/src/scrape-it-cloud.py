@@ -29,7 +29,7 @@ class ScrapeItCloud:
             if self.test_proxy(proxy):
                 proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                 proxy['最近测试连续失败次数']=0
-                if proxy['country']=='Unknown': proxy['country']=None
+                if proxy['country']=='Unknown': del proxy['country']
                 available_proxies.append(proxy)
             print(proxy)
         return available_proxies
