@@ -25,6 +25,7 @@ class ProxySocks4:
                     latestAvailableTime TIMESTAMP, -- 最后可用时间
                     最近测试连续失败次数 INTEGER,
                     是否对Tor友好 TEXT CHECK("是否对Tor友好" IN ('是', '否')),
+                    comment TEXT,
                     PRIMARY KEY(ip,port)
                 );"""
         self.__cursor.execute(sql)
@@ -63,11 +64,23 @@ class ProxySocks4:
             return True
         return False
     
-    def update(self, proxy):   # 上传数据库
+    def update(self, proxy):   # 更新数据库
         self.__cursor.execute(
             '''update proxy_socks4 set latestAvailableTime=?, 最近测试连续失败次数=? where ip=? and port=?''',
             (proxy['latestAvailableTime'], proxy['最近测试连续失败次数'], proxy['ip'], proxy['port'])
         )
+        self.__conn.commit()    # 提交事务
+
+    def add_or_update(self, proxy):   # 添加或更新数据
+        self.__cursor.execute('insert or ignore into proxy_socks4(ip,port) values(?,?)', (proxy['ip'],proxy['port']))
+        if 'country' in proxy:
+            self.__cursor.execute('update proxy_socks4 set country=? where ip=? and port=? and country is null', (proxy['country'], proxy['ip'],proxy['port']))
+        if 'latestAvailableTime' in proxy:
+            self.__cursor.execute('update proxy_socks4 set latestAvailableTime=? where ip=? and port=?', (proxy['latestAvailableTime'], proxy['ip'],proxy['port']))
+        if '最近测试连续失败次数' in proxy:
+            self.__cursor.execute('update proxy_socks4 set 最近测试连续失败次数=? where ip=? and port=?', (proxy['最近测试连续失败次数'], proxy['ip'],proxy['port']))
+        if 'comment' in proxy:
+            self.__cursor.execute('update proxy_socks4 set comment=? where ip=? and port=? and comment is null', (proxy['comment'], proxy['ip'],proxy['port']))
         self.__conn.commit()    # 提交事务
 
     def get_available_foreign_proxy(self, quantity=30):  # 从数据库中提取可用的国外socks4代理，不少于quantity个
@@ -189,6 +202,53 @@ class ProxySocks4:
     #             self.upload(type,ip,port,country=None,lastAvailableTime=None,lastStatus=lastStatus,torFriendly=torFriendly)
     #     return torFriendly
 
+
+class ProxyHTTP:
+    def __init__(self):
+        database_path=os.path.join(os.path.split(os.path.realpath(__file__))[0], '../config/myProxy.db')
+        self.__conn=sqlite3.connect(database_path)  # 连接或创建数据库
+        self.__conn.row_factory=self.dict_factory
+        self.__cursor = self.__conn.cursor()  # 创建游标
+
+        # 创建表
+        sql = """CREATE TABLE IF NOT EXISTS proxy_http(
+                    ip TEXT NOT NULL,  -- 代理的IP地址
+                    port INTEGER NOT NULL,  -- 代理IP的端口
+                    country TEXT,   -- 代理IP所属国家
+                    uploadTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- 代理IP存入数据库的时间
+                    latestAvailableTime TIMESTAMP, -- 最后可用时间
+                    最近测试连续失败次数 INTEGER,
+                    是否对Tor友好 TEXT CHECK("是否对Tor友好" IN ('是', '否')),
+                    comment TEXT,
+                    PRIMARY KEY(ip,port)
+                );"""
+        self.__cursor.execute(sql)
+        self.__conn.commit()    # 提交事务
+
+    def __del__(self):
+        self.__cursor.close()
+        self.__conn.commit()    # 提交事务
+        self.__conn.close() # 关闭连接
+
+    def dict_factory(self, cursor, row):
+        # Python Sqlite3以字典形式返回查询结果的实现方法：
+        # 参考：https://blog.csdn.net/bigcarp/article/details/114387469
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+    
+    def add_or_update(self, proxy):   # 添加数据
+        self.__cursor.execute('insert or ignore into proxy_http(ip,port) values(?,?)', (proxy['ip'],proxy['port']))
+        if 'country' in proxy:
+            self.__cursor.execute('update proxy_http set country=? where ip=? and port=? and country is null', (proxy['country'], proxy['ip'],proxy['port']))
+        if 'latestAvailableTime' in proxy:
+            self.__cursor.execute('update proxy_http set latestAvailableTime=? where ip=? and port=?', (proxy['latestAvailableTime'], proxy['ip'],proxy['port']))
+        if '最近测试连续失败次数' in proxy:
+            self.__cursor.execute('update proxy_http set 最近测试连续失败次数=? where ip=? and port=?', (proxy['最近测试连续失败次数'], proxy['ip'],proxy['port']))
+        if 'comment' in proxy:
+            self.__cursor.execute('update proxy_http set comment=? where ip=? and port=? and comment is null', (proxy['comment'], proxy['ip'],proxy['port']))
+        self.__conn.commit()    # 提交事务
 
 
 if __name__=="__main__":

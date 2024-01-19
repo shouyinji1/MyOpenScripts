@@ -19,4 +19,4 @@ if __name__=='__main__':
         print(error)
         error+='\n\n==========\n'
         error+=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n'
-        Email().send(content=error, subject='Nginx代理检查程序异常')
+        Email().send(content=error, subject='Nginx代理更新程序异常')
