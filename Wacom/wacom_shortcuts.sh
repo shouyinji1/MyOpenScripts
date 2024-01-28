@@ -3,13 +3,22 @@
 # Linux平台Wacom数位板快捷键触发脚本
 # 自由选择映射区域功能需要安装xdotool
 
-# Wacom CTL 472
-device="Wacom One by Wacom S Pen stylus"
-defaultArea=(0 0 15200 9500)
-
-# Wacom CTL 672
-#device="Wacom One by Wacom M Pen stylus"
-#defaultArea=(0 0 21600 13500)
+# 判断是哪个型号的数位板
+wacom_info=`xsetwacom --list`
+if [[ $wacom_info == *"Wacom One by Wacom S Pen stylus"* ]]; then
+    # Wacom CTL 472
+    device="Wacom One by Wacom S Pen stylus"
+    defaultArea=(0 0 15200 9500)
+	scale_factor=1	# 缩放因子。不缩放
+elif [[ $wacom_info == *"Wacom One by Wacom M Pen stylus"* ]]; then
+    # Wacom CTL 672
+    device="Wacom One by Wacom M Pen stylus"
+    defaultArea=(0 0 21600 13500)
+	scale_factor='130/100'	# 缩放至130%大小，适用15.6寸屏幕，Wacom CTL 672
+else
+    echo "数位板型号未知"
+    exit    # 退出当前shell
+fi
 
 
 # 获取显示器分辨率和基轴坐标
@@ -116,11 +125,7 @@ setDevice(){
 		fi
 	elif [ "$1" == "-a" ];then 	# 自由选定映射区域，1/2屏幕宽度，指针位于映射中心的左上方
 		eval $(xdotool getmouselocation --shell)	# 获取鼠标指针的X、Y、SCREEN、WINDOW变量值。需要安装xdotool工具
-		if [ "$device" == "Wacom One by Wacom M Pen stylus" ];then
-			newSize_x=$((size_x/2 * 100/80))	# 缩放至120%大小，适用15.6寸屏幕，Wacom CTL 672
-		else
-			newSize_x=$((size_x/2))	# 1/2屏幕宽度
-		fi
+		newSize_x=$((size_x/2 * $scale_factor))	# 1/2屏幕宽度，并根据缩放因子适当缩放
 		newSize_y=$((newSize_x * defaultArea[3] / defaultArea[2]))	# 保持长宽比
 		basePoint_x=$((X - newSize_x/3))	# 鼠标指针位于映射中心的左上方
 		basePoint_y=$((Y - newSize_y/4))
