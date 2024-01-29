@@ -20,7 +20,7 @@ class ScrapeItCloud:
             for line in soup_table:
                 data=line.find_all('td')
                 proxies.append({'ip':data[0].text, 'port':data[1].text, 'protocol':data[2].text, 'country':data[3].text,
-                               'comment': '来源:https://scrap-it.cloud, Protocol:'+data[2].text+', Anonymity:'+data[4].text})
+                               'comment': '来源:https://scrape-it.cloud/free-proxy-list, Protocol:'+data[2].text+', Anonymity:'+data[4].text})
         return proxies
     
     def get_available_proxy(self):
