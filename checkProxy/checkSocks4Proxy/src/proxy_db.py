@@ -7,6 +7,7 @@ import os
 import socket
 import requests
 import time
+import threading
 
 
 class ProxySocks4:
@@ -44,7 +45,7 @@ class ProxySocks4:
             d[col[0]] = row[idx]
         return d
 
-    def is_foreign_proxy(self, ip, port):    # 检查代理是否是国外代理
+    def is_available_foreign_proxy(self, ip, port):    # 检查代理是否是国外可用代理
         proxies = {
             "http": 'socks4://'+ip+':'+str(port),
             'https': 'socks4://'+ip+':'+str(port)
@@ -64,6 +65,45 @@ class ProxySocks4:
             return True
         return False
     
+    def sift_available_foreign_proxies(self, proxies, available_proxies, waiting_update_proxy):
+        while(True):
+            try:
+                proxy=proxies.pop()
+                if self.is_available_foreign_proxy(proxy['ip'], proxy['port']):
+                    proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                    proxy['最近测试连续失败次数']=0
+                    available_proxies.append(proxy)
+                else:
+                    if proxy['最近测试连续失败次数'] != None:
+                        proxy['最近测试连续失败次数']=proxy['最近测试连续失败次数']+1
+                    else:
+                        proxy['最近测试连续失败次数']=1
+                waiting_update_proxy.append(proxy)
+                print(proxy)
+            except IndexError:
+                break
+    
+    def get_available_foreign_proxies(self, quantity=30):  # 从数据库中提取可用的国外socks4代理，不少于quantity个
+        available_proxies=[]
+        waiting_update_proxy=[]
+        offset = 0  # 数据库select偏移量
+        while len(available_proxies) < quantity:
+            proxy_db=self.__cursor.execute('''select * from proxy_socks4 where country !='China' or country is null order by 最近测试连续失败次数 asc limit ?,?'''
+                                            ,(offset, quantity)).fetchall()
+            if len(proxy_db) < 1: break   # 已经没有代理了
+            threads=[]
+            for _ in range(10): # 创建10个线程，筛选代理
+                threads.append(threading.Thread(target=self.sift_available_foreign_proxies, args=(
+                    proxy_db, available_proxies, waiting_update_proxy
+                )))
+            for thread in threads: thread.start()
+            for thread in threads: thread.join()    # 等待线程结束
+            offset=offset+quantity
+        if len(waiting_update_proxy) != 0:  # 更新数据库中的代理状态
+            for proxy in waiting_update_proxy:
+                self.update(proxy)
+        return available_proxies
+
     def update(self, proxy):   # 更新数据库
         self.__cursor.execute(
             '''update proxy_socks4 set latestAvailableTime=?, 最近测试连续失败次数=? where ip=? and port=?''',
@@ -82,32 +122,6 @@ class ProxySocks4:
         if 'comment' in proxy:
             self.__cursor.execute('update proxy_socks4 set comment=? where ip=? and port=? and comment is null', (proxy['comment'], proxy['ip'],proxy['port']))
         self.__conn.commit()    # 提交事务
-
-    def get_available_foreign_proxy(self, quantity=30):  # 从数据库中提取可用的国外socks4代理，不少于quantity个
-        available_proxies=[]
-        waiting_update_proxy=[]
-        offset = 0  # 数据库select偏移量
-        while len(available_proxies) < quantity:
-            proxy_db=self.__cursor.execute('''select * from proxy_socks4 where country !='China' or country is null order by 最近测试连续失败次数 asc limit ?,?'''
-                                            ,(offset, quantity)).fetchall()
-            if len(proxy_db) < 1: break   # 已经没有代理了
-            for proxy in proxy_db:
-                if self.is_foreign_proxy(proxy['ip'], proxy['port']):
-                    proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                    proxy['最近测试连续失败次数']=0
-                    available_proxies.append(proxy)
-                else:
-                    if proxy['最近测试连续失败次数'] != None:
-                        proxy['最近测试连续失败次数']=proxy['最近测试连续失败次数']+1
-                    else:
-                        proxy['最近测试连续失败次数']=1
-                print(proxy)
-            waiting_update_proxy = waiting_update_proxy + proxy_db
-            offset=offset+quantity
-        if len(waiting_update_proxy) != 0:
-            for proxy in waiting_update_proxy:
-                self.update(proxy)
-        return available_proxies
     
     def isConnected(self):  # 测试是否有网
         try:
@@ -253,5 +267,5 @@ class ProxyHTTP:
 
 if __name__=="__main__":
     proxy_socks4=ProxySocks4()
-    proxy_socks4.get_available_foreign_proxy()
+    proxy_socks4.get_available_foreign_proxies()
     print(proxy_socks4.available_proxies)
