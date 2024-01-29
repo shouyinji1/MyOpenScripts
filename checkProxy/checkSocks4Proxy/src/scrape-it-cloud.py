@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import socket
 import time
 import traceback
+import threading
 
 from proxy_db import ProxySocks4
 from proxy_db import ProxyHTTP
@@ -25,13 +26,11 @@ class ScrapeItCloud:
     def get_available_proxy(self):
         available_proxies=[]
         proxies=self.get_proxies()
-        for proxy in proxies:
-            if self.test_proxy(proxy):
-                proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                proxy['最近测试连续失败次数']=0
-                if proxy['country']=='Unknown': del proxy['country']
-                available_proxies.append(proxy)
-            print(proxy)
+        threads=[]  # 初始化线程池
+        for _ in range(10): # 创建10个线程
+            threads.append(threading.Thread(target=self.test_proxies, args=(proxies,available_proxies)))
+        for thread in threads: thread.start()
+        for thread in threads: thread.join()    # 等待线程结束
         return available_proxies
 
     def test_socks_proxy(self, proxy):
@@ -73,6 +72,19 @@ class ScrapeItCloud:
             return self.test_socks_proxy(proxy)
         return False
 
+    def test_proxies(self, proxies, available_proxies):
+        while(True):
+            try:
+                proxy=proxies.pop()
+                if self.test_proxy(proxy):
+                    proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                    proxy['最近测试连续失败次数']=0
+                    if proxy['country']=='Unknown': del proxy['country']
+                    available_proxies.append(proxy)
+                print(proxy)
+            except IndexError:
+                break
+
     def isConnected(self):  # 测试是否有网
         try:
             # connect to the host -- tells us if the host is actually reachable
@@ -91,7 +103,7 @@ class ScrapeItCloud:
                 proxyHTTP.add_or_update(proxy)
             elif proxy['protocol'] in ('SOCKS','SOCKS4','SOCKS5'):
                 proxySocks4.add_or_update(proxy)
-            #print(proxy)
+        print("共"+str(len(available_proxies))+"个有效代理")
 
 
 
