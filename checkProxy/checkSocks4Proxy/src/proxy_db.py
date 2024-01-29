@@ -87,9 +87,10 @@ class ProxySocks4:
         available_proxies=[]
         waiting_update_proxy=[]
         offset = 0  # 数据库select偏移量
+        scale=5 # 依据二八定律。用于筛选的代理样本中，往往最后只有小很一部分是真实有效的。故一次select扩大quantity的5倍
         while len(available_proxies) < quantity:
             proxy_db=self.__cursor.execute('''select * from proxy_socks4 where country !='China' or country is null order by 最近测试连续失败次数 asc limit ?,?'''
-                                            ,(offset, quantity)).fetchall()
+                                            ,(offset, quantity*scale)).fetchall()
             if len(proxy_db) < 1: break   # 已经没有代理了
             threads=[]
             for _ in range(10): # 创建10个线程，筛选代理
@@ -98,7 +99,7 @@ class ProxySocks4:
                 )))
             for thread in threads: thread.start()
             for thread in threads: thread.join()    # 等待线程结束
-            offset=offset+quantity
+            offset=offset+quantity*scale
         if len(waiting_update_proxy) != 0:  # 更新数据库中的代理状态
             for proxy in waiting_update_proxy:
                 self.update(proxy)
