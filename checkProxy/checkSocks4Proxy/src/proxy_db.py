@@ -51,7 +51,7 @@ class ProxySocks4:
             'https': 'socks4://'+ip+':'+str(port)
         }
         try:
-            response=requests.get('https://www.bing.com', proxies=proxies, timeout=(5,20))  # 找出5s内建立连接，20s内相应请求的代理
+            response=requests.get('https://www.bing.com', proxies=proxies, timeout=(10,20))  # 找出10s内建立连接，20s内响应请求的代理
         except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError):
             if self.isConnected():
                 return False
