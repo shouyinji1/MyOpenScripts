@@ -57,19 +57,36 @@ class ProxySocks4:
                 return False
             else:
                 raise Exception("没网")
-            
         # Bing国际版和国内版标题不同，国内访问国际版会被重定向
         if('<title>Bing</title>' in response.text 
                 or '<title>Microsoft Bing Search</title>' in response.text 
                 or '<title>Search</title>' in response.text):
             return True
         return False
-    
+        
+    def is_connect_server(self, ip, port):
+        proxies = {
+            "http": 'socks4://'+ip+':'+str(port),
+            'https': 'socks4://'+ip+':'+str(port)
+        }
+        try:
+            response=requests.get('http://66.135.20.147', proxies=proxies, timeout=(5,20))  # 找出5s内建立连接，20s内响应请求的代理
+        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError):
+            if self.isConnected():
+                return False
+            else:
+                raise Exception("没网")
+        if '<!--kkg34Qnm3KlviBhnzbO9kBCiTsSZVjbV4V6eI5FWAgwO2GVAeAeQFSyOaiDmeTMU-->' in response.text:
+            return True
+        return False
+
     def sift_available_foreign_proxies(self, proxies, available_proxies, waiting_update_proxy):
         while(True):
             try:
                 proxy=proxies.pop()
-                if self.is_available_foreign_proxy(proxy['ip'], proxy['port']):
+                if self.is_available_foreign_proxy(proxy['ip'], proxy['port']) \
+                    and self.is_connect_server(proxy['ip'], proxy['port']) \
+                    and self.is_available_foreign_proxy(proxy['ip'], proxy['port']):
                     proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                     proxy['最近测试连续失败次数']=0
                     available_proxies.append(proxy)
@@ -82,7 +99,7 @@ class ProxySocks4:
                 print(proxy)
             except IndexError:
                 break
-    
+
     def get_available_foreign_proxies(self, quantity=30):  # 从数据库中提取可用的国外socks4代理，不少于quantity个
         available_proxies=[]
         waiting_update_proxy=[]
