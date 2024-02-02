@@ -63,29 +63,12 @@ class ProxySocks4:
                 or '<title>Search</title>' in response.text):
             return True
         return False
-        
-    def is_connect_server(self, ip, port):
-        proxies = {
-            "http": 'socks4://'+ip+':'+str(port),
-            'https': 'socks4://'+ip+':'+str(port)
-        }
-        try:
-            response=requests.get('http://66.135.20.147', proxies=proxies, timeout=(10,20))  # 找出10s内建立连接，20s内响应请求的代理
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError):
-            if self.isConnected():
-                return False
-            else:
-                raise Exception("没网")
-        if '<!--kkg34Qnm3KlviBhnzbO9kBCiTsSZVjbV4V6eI5FWAgwO2GVAeAeQFSyOaiDmeTMU-->' in response.text:
-            return True
-        return False
 
     def sift_available_foreign_proxies(self, proxies, available_proxies, waiting_update_proxy):
         while(True):
             try:
                 proxy=proxies.pop()
-                if self.is_available_foreign_proxy(proxy['ip'], proxy['port']) \
-                    and self.is_connect_server(proxy['ip'], proxy['port']):
+                if self.is_available_foreign_proxy(proxy['ip'], proxy['port']):
                     proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                     proxy['最近测试连续失败次数']=0
                     available_proxies.append(proxy)
