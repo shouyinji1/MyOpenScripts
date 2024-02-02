@@ -51,7 +51,7 @@ class ProxySocks4:
             'https': 'socks4://'+ip+':'+str(port)
         }
         try:
-            response=requests.get('https://www.bing.com', proxies=proxies, timeout=(5,20))  # 找出5s内建立连接，20s内响应请求的代理
+            response=requests.get('https://www.bing.com', proxies=proxies, timeout=(10,20))  # 找出10s内建立连接，20s内响应请求的代理
         except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError):
             if self.isConnected():
                 return False
@@ -70,7 +70,7 @@ class ProxySocks4:
             'https': 'socks4://'+ip+':'+str(port)
         }
         try:
-            response=requests.get('http://66.135.20.147', proxies=proxies, timeout=(5,20))  # 找出5s内建立连接，20s内响应请求的代理
+            response=requests.get('http://66.135.20.147', proxies=proxies, timeout=(10,20))  # 找出10s内建立连接，20s内响应请求的代理
         except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError):
             if self.isConnected():
                 return False
@@ -85,8 +85,7 @@ class ProxySocks4:
             try:
                 proxy=proxies.pop()
                 if self.is_available_foreign_proxy(proxy['ip'], proxy['port']) \
-                    and self.is_connect_server(proxy['ip'], proxy['port']) \
-                    and self.is_available_foreign_proxy(proxy['ip'], proxy['port']):
+                    and self.is_connect_server(proxy['ip'], proxy['port']):
                     proxy['latestAvailableTime']=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                     proxy['最近测试连续失败次数']=0
                     available_proxies.append(proxy)
