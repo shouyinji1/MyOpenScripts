@@ -34,15 +34,14 @@ class Nginx:
         quantity = 30    # 获取的代理条数大于等于30
         proxies=ProxySocks4().get_available_foreign_proxies(quantity)
         if proxies != None and proxies !=[]:
-            if len(proxies) < quantity: self.sendEmail('代理不足')
+            #if len(proxies) < quantity: self.sendEmail('代理不足')
+            if len(proxies) < 10: 
+                Email().send(subject='代理不足',content=str(proxies))
             for proxy in proxies:
                 line+='\t\tserver '+proxy['ip']+':'+str(proxy['port'])+';\n'
         else:
-            self.sendEmail('没有代理了')
+            Email().send(subject='没有代理了',content='没有代理了，没有代理了，没有代理了，没有代理了，没有代理了')
         return line
-
-    def sendEmail(self, info):
-        Email().send(subject=info, content=info)
 
 
 
