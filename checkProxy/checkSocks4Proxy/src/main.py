@@ -12,7 +12,7 @@ if __name__=='__main__':
     try:
         while(True):
             Nginx('/etc/nginx/nginx.conf').check_socks4()
-            time.sleep(3600)    # 间隔1小时
+            time.sleep(7200)    # 间隔2小时
 
     except Exception as e:
         error=traceback.format_exc()
