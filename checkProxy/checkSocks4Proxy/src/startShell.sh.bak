@@ -1,4 +1,0 @@
-#!/usr/bin/bash
-
-cd /root/MyScripts/Python/checkSocks4Proxy/
-python3 ./checkSocks4Proxy.py --loop /etc/nginx/nginx.conf

@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart= /usr/bin/bash /root/MyScripts/Python/checkSocks4Proxy/startShell.sh > /dev/null
+ExecStart= /usr/bin/python3 /root/MyOpenScripts/checkProxy/checkSocks4Proxy/src/main.py > /dev/null
 Restart=on-failure
 RestartSec=30 
 User=root
