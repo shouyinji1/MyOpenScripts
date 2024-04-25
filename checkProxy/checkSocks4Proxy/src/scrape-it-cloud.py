@@ -66,9 +66,10 @@ class ScrapeItCloud:
         return False
 
     def test_proxy(self, proxy):
-        if proxy['protocol'] in ('HTTP','HTTPS'):
-            return self.test_http_proxy(proxy)
-        elif proxy['protocol'] in ('SOCKS','SOCKS4','SOCKS5'):
+        #if proxy['protocol'] in ('HTTP','HTTPS'):
+        #    return self.test_http_proxy(proxy)
+        #elif proxy['protocol'] in ('SOCKS','SOCKS4','SOCKS5'):
+        if proxy['protocol'] in ('SOCKS','SOCKS4','SOCKS5'):
             return self.test_socks_proxy(proxy)
         return False
 
