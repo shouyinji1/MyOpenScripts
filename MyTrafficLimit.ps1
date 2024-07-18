@@ -6,53 +6,22 @@
 
 # 限速：
 Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
-    # 不限速时间段：21:00-22:00, 06:00-09:00, 12:00-13:00
-    if( ((get-random -inputobject (0..1)) -eq 0) `
-        -or ( ((Get-Date -Format "HH:mm").CompareTo("21:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("22:00") -eq -1) ) `
-        -or ( ((Get-Date -Format "HH:mm").CompareTo("06:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("09:00") -eq -1) ) `
-        -or ( ((Get-Date -Format "HH:mm").CompareTo("12:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("13:00") -eq -1) ) `
-    ){ # 1/2概率不限速
-        Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20GB
-        Set-NetQosPolicy -Name "MyTrafficLimit_IPSrc_10.14.134.167_20" -IPSrcPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 20GB  # NoMachine
+    # 不限速时段：20:00-22:00
+    if( ( ((Get-Date -Format "HH:mm").CompareTo("20:00") -eq 1) -and ((Get-Date -Format "HH:mm").CompareTo("22:00") -eq -1) ) ){ # 不限速时段
+        Remove-NetQosPolicy -Name "MyTrafficLimit*"
     }else{  # 限速
-        Set-NetQosPolicy -Name "MyTrafficLimit" -ThrottleRateActionBitsPerSecond 20KB
-        if($? -eq $false){
-            New-NetQosPolicy -Name "MyTrafficLimit" -Default -ThrottleRateActionBitsPerSecond 20KB
-
-            ## 不限速白名单
-            New-NetQosPolicy -Name "MyTrafficLimit_org" -URIMatchCondition "https://*.org" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # .org类网站
-            New-NetQosPolicy -Name "MyTrafficLimit_edu.cn" -URIMatchCondition "https://*.edu.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 各教育类网站
-            New-NetQosPolicy -Name "MyTrafficLimit_gov.cn" -URIMatchCondition "https://*.gov.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 各政府类网站
-            New-NetQosPolicy -Name "MyTrafficLimit_cnki.net" -URIMatchCondition "https://*.cnki.net" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 中国知网
-            New-NetQosPolicy -Name "MyTrafficLimit_eudic.net" -URIMatchCondition "https://*.eudic.net" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 欧陆词典
-            New-NetQosPolicy -Name "MyTrafficLimit_fenbi.com" -URIMatchCondition "https://*.fenbi.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 粉笔网
-            New-NetQosPolicy -Name "MyTrafficLimit_github.com" -URIMatchCondition "https://*.github.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # GitHub
-            New-NetQosPolicy -Name "MyTrafficLimit_gitlab.com" -URIMatchCondition "https://*.gitlab.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # GitLab
-            New-NetQosPolicy -Name "MyTrafficLimit_google.cn" -URIMatchCondition "https://*.google.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # google.cn
-            New-NetQosPolicy -Name "MyTrafficLimit_google.com" -URIMatchCondition "https://*.google.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # google.com
-            New-NetQosPolicy -Name "MyTrafficLimit_jianguoyun.com" -URIMatchCondition "https://*.jianguoyun.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 坚果云
-            New-NetQosPolicy -Name "MyTrafficLimit_live.com" -URIMatchCondition "https://*.live.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 微软账户
-            New-NetQosPolicy -Name "MyTrafficLimit_runoob.com" -URIMatchCondition "https://*.runoob.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 菜鸟教程
-            New-NetQosPolicy -Name "MyTrafficLimit_suishouxie.com" -URIMatchCondition "https://*.suishouxie.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 随手写
-            New-NetQosPolicy -Name "MyTrafficLimit_unipus.cn" -URIMatchCondition "https://*.unipus.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # U校园
-            New-NetQosPolicy -Name "MyTrafficLimit_chsi.com.cn" -URIMatchCondition "https://*.chsi.com.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 学信网
-
-            New-NetQosPolicy -Name "MyTrafficLimit_dasai.lanqiao.cn" -URIMatchCondition "https://dasai.lanqiao.cn" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 蓝桥杯大赛
-            New-NetQosPolicy -Name "MyTrafficLimit_fanyi.youdao.com" -URIMatchCondition "https://fanyi.youdao.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 有道翻译
-            New-NetQosPolicy -Name "MyTrafficLimit_learn.microsoft.com" -URIMatchCondition "https://learn.microsoft.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # Microsoft Learn
-            New-NetQosPolicy -Name "MyTrafficLimit_wenku.baidu.com" -URIMatchCondition "https://wenku.baidu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 5GB # 百度文库
-            
-            # NoMachine
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxservice64.exe" -AppPathNameMatchCondition "nxservice64.exe" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxnode.bin" -AppPathNameMatchCondition "nxnode.bin" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxnode.exe" -AppPathNameMatchCondition "nxnode.exe" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxd.exe" -AppPathNameMatchCondition "nxd.exe" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxserver.bin" -AppPathNameMatchCondition "nxserver.bin" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxserver.exe" -AppPathNameMatchCondition "nxserver.exe" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxrunner.bin" -AppPathNameMatchCondition "nxrunner.bin" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_Path_nxrunner.exe" -AppPathNameMatchCondition "nxrunner.exe" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_IPDst_10.14.134.167_20" -IPDstPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 5GB
-            New-NetQosPolicy -Name "MyTrafficLimit_IPSrc_10.14.134.167_20" -IPSrcPrefixMatchCondition "10.14.134.167/20" -ThrottleRateActionBitsPerSecond 200KB
+        # 检验规则是否已经生效过
+        Set-NetQosPolicy -Name "MyTrafficLimit_xueqiu" -URIMatchCondition "https://xueqiu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 雪球
+        if($? -eq $false){  # 没有生效过，是第一次创建规则
+            ## 限速黑名单
+            New-NetQosPolicy -Name "MyTrafficLimit_xueqiu" -URIMatchCondition "https://xueqiu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 雪球
+            New-NetQosPolicy -Name "MyTrafficLimit_eastmoney" -URIMatchCondition "https://www.eastmoney.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 东方财富
+            New-NetQosPolicy -Name "MyTrafficLimit_bilibili" -URIMatchCondition "https://www.bilibili.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # Bilibili
+            New-NetQosPolicy -Name "MyTrafficLimit_tieba" -URIMatchCondition "https://tieba.baidu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 百度贴吧
+            New-NetQosPolicy -Name "MyTrafficLimit_haokan" -URIMatchCondition "https://haokan.baidu.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 百度好看视频
+            New-NetQosPolicy -Name "MyTrafficLimit_douban" -URIMatchCondition "https://www.douban.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 豆瓣
+            New-NetQosPolicy -Name "MyTrafficLimit_www.weibo.com" -URIMatchCondition "https://www.weibo.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 微博电脑网页
+            New-NetQosPolicy -Name "MyTrafficLimit_m.weibo.com" -URIMatchCondition "https://m.weibo.com" -URIRecursiveMatchCondition $true -ThrottleRateActionBitsPerSecond 1KB # 微博手机网页
         }
     }
 } -Trigger (    # 每一分钟执行一次
