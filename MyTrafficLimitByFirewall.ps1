@@ -77,7 +77,6 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=81.70.124.99
 
             # digdig.io
-<<<<<<< HEAD
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::681a:525
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::ac43:4a3b
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::681a:425
@@ -87,13 +86,6 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
 
             # reabble.cn
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=193.163.19.205
-=======
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::681a:425
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::ac43:4a3b
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=2606:4700:20::681a:525
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=104.26.4.37
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=172.67.74.59
-            netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=104.26.5.37
 
             # AcFun
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=223.111.231.200
@@ -104,7 +96,6 @@ Register-ScheduledJob -Name "MyTrafficLimit" -ScriptBlock{
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=223.111.231.195
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=223.111.231.196
             netsh advfirewall firewall add rule name="MyLimit" dir=out action=block remoteip=223.111.231.193
->>>>>>> f2b5ab9264381072c97f5780e6875d08d2931af3
         }
     }
 } -Trigger (    # 每一分钟执行一次
